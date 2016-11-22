@@ -166,10 +166,9 @@ Potree.Viewer = function(domElement, args){
 			
 			scope.earthControls.pointclouds.push(pointcloud);	
 			
-			
 			if(scope.pointclouds.length === 1){
 				scope.setNavigationMode("Orbit");
-				scope.flipYZ();
+				//scope.flipYZ();
 				scope.zoomTo(pointcloud, 1);
 			}
 			
@@ -1313,6 +1312,7 @@ Potree.Viewer = function(domElement, args){
 		var near = 0.1;
 		var far = 1000*1000;
 
+    scope.fruscene = new THREE.Scene();
 		scope.scene = new THREE.Scene();
 		scope.scenePointCloud = new THREE.Scene();
 		scope.sceneBG = new THREE.Scene();
@@ -1725,6 +1725,7 @@ Potree.Viewer = function(domElement, args){
 			}
 			
 			// render scene
+			scope.renderer.render(scope.fruscene, scope.camera);
 			scope.renderer.render(scope.scene, scope.camera);
 			
 			//var queryPC = Potree.startQuery("PointCloud", viewer.renderer.getContext());

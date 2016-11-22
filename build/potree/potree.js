@@ -11508,7 +11508,7 @@ Potree.Viewer = function(domElement, args){
 	this.quality = "Squares";
 	this.isFlipYZ = false;
 	this.useDEMCollisions = false;
-	this.minNodeSize = 100;
+	this.minNodeSize = 1;
 	this.directionalLight;
 	this.edlStrength = 1.0;
 	this.edlRadius = 1.4;
@@ -11611,7 +11611,10 @@ Potree.Viewer = function(domElement, args){
 			scope.pointclouds.push(pointcloud);
 
 			scope.referenceFrame.add(pointcloud);
-		
+
+      scope.flipYZ();
+	
+    /*  
 			var sg = pointcloud.boundingSphere.clone().applyMatrix4(pointcloud.matrixWorld);
 			 
 			scope.referenceFrame.updateMatrixWorld(true);
@@ -11634,6 +11637,9 @@ Potree.Viewer = function(domElement, args){
 				var moveSpeed = sg.radius / 6;
 				scope.setMoveSpeed(moveSpeed);
 			}
+      */
+
+      scope.camera.near=0.001;
 			
 			//scope.flipYZ();
 			
@@ -12380,6 +12386,7 @@ Potree.Viewer = function(domElement, args){
 	};
 	
 	this.flipYZ = function(){
+    console.log('flip');
 		scope.isFlipYZ = !scope.isFlipYZ;
 		
 		scope.referenceFrame.matrix.copy(new THREE.Matrix4());
@@ -12401,13 +12408,14 @@ Potree.Viewer = function(domElement, args){
 		}
 		
 		scope.referenceFrame.updateMatrixWorld(true);
+    /*
 		var box = scope.getBoundingBox();
 		scope.referenceFrame.position.copy(box.getCenter()).multiplyScalar(-1);
 		scope.referenceFrame.position.y = -box.min.y;
 		scope.referenceFrame.updateMatrixWorld(true);
 		
 		scope.updateHeightRange();
-		
+		*/
 		
 		//scope.referenceFrame.updateMatrixWorld(true);
 		//scope.pointclouds[0].updateMatrixWorld();
@@ -12796,9 +12804,10 @@ Potree.Viewer = function(domElement, args){
 		var near = 0.1;
 		var far = 1000*1000;
 
+    scope.fruscene = new THREE.Scene();
 		scope.scene = new THREE.Scene();
 		scope.scenePointCloud = new THREE.Scene();
-		scope.sceneBG = new THREE.Scene();
+//		scope.sceneBG = new THREE.Scene();
 		
 		scope.camera = new THREE.PerspectiveCamera(scope.fov, aspect, near, far);
 		//camera = new THREE.OrthographicCamera(-50, 50, 50, -50, 1, 100000);
@@ -12831,8 +12840,8 @@ Potree.Viewer = function(domElement, args){
 		
 		//this.addPointCloud(pointcloudPath);
 		
-		var grid = Potree.utils.createGrid(5, 5, 2);
-		scope.scene.add(grid);
+		scope.grid = Potree.utils.createGrid(5, 5, 2);
+		//scope.scene.add(grid);
 		
 		scope.measuringTool = new Potree.MeasuringTool(scope.scenePointCloud, scope.camera, scope.renderer, scope.toGeo);
 		scope.profileTool = new Potree.ProfileTool(scope.scenePointCloud, scope.camera, scope.renderer);
@@ -12881,6 +12890,7 @@ Potree.Viewer = function(domElement, args){
 		
 		// background
 		// var texture = THREE.ImageUtils.loadTexture( Potree.resourcePath + '/textures/background.gif' );
+    /*
 		var texture = Potree.utils.createBackgroundTexture(512, 512);
 		
 		texture.minFilter = texture.magFilter = THREE.NearestFilter;
@@ -12896,6 +12906,7 @@ Potree.Viewer = function(domElement, args){
 		bg.material.depthTest = false;
 		bg.material.depthWrite = false;
 		scope.sceneBG.add(bg);			
+    */
 		
 		window.addEventListener( 'keydown', onKeyDown, false );
 		
@@ -13184,7 +13195,7 @@ Potree.Viewer = function(domElement, args){
 				skybox.camera.rotation.copy(scope.camera.rotation);
 				scope.renderer.render(skybox.scene, skybox.camera);
 			}else{
-				scope.renderer.render(scope.sceneBG, scope.cameraBG);
+//				scope.renderer.render(scope.sceneBG, scope.cameraBG);
 			}
 			
 			for(var i = 0; i < scope.pointclouds.length; i++){
@@ -13208,6 +13219,7 @@ Potree.Viewer = function(domElement, args){
 			}
 			
 			// render scene
+			scope.renderer.render(scope.fruscene, scope.camera);
 			scope.renderer.render(scope.scene, scope.camera);
 			
 			//var queryPC = Potree.startQuery("PointCloud", viewer.renderer.getContext());
@@ -13318,7 +13330,7 @@ Potree.Viewer = function(domElement, args){
 				skybox.camera.rotation.copy(scope.camera.rotation);
 				scope.renderer.render(skybox.scene, skybox.camera);
 			}else{
-				scope.renderer.render(scope.sceneBG, scope.cameraBG);
+//				scope.renderer.render(scope.sceneBG, scope.cameraBG);
 			}
 			scope.renderer.render(scope.scene, scope.camera);
 			
@@ -13474,7 +13486,7 @@ Potree.Viewer = function(domElement, args){
 				skybox.camera.rotation.copy(scope.camera.rotation);
 				scope.renderer.render(skybox.scene, skybox.camera);
 			}else{
-				scope.renderer.render(scope.sceneBG, scope.cameraBG);
+//				scope.renderer.render(scope.sceneBG, scope.cameraBG);
 			}
 			scope.renderer.render(scope.scene, scope.camera);
 			
