@@ -13685,6 +13685,10 @@ Potree.Viewer = function(domElement, args){
 		}else{
 			potreeRenderer.render();
 		}
+
+    if (scope.record) {
+      scope.record();
+    }
 		
 		//if(this.takeScreenshot == true){
 		//	this.takeScreenshot = false;
