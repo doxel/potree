@@ -215,7 +215,7 @@ float getLOD(){
 }
 
 float getPointSizeAttenuation(){
-	return pow(1.3, getLOD());
+	return 0.5 * pow(1.3, getLOD());
 }
 
 #endif
@@ -248,15 +248,14 @@ float getIntensity(){
 
 vec3 getElevation(){
 	vec4 world = modelMatrix * vec4( position, 1.0 );
-	float w = (world.y - heightMin) / (heightMax-heightMin);
+	float w = (world.z - heightMin) / (heightMax-heightMin);
 	vec3 cElevation = texture2D(gradient, vec2(w,1.0-w)).rgb;
 	
 	return cElevation;
 }
 
 vec4 getClassification(){
-	float c = mod(classification, 16.0);
-	vec2 uv = vec2(c / 255.0, 0.5);
+	vec2 uv = vec2(classification / 255.0, 0.5);
 	vec4 classColor = texture2D(classificationLUT, uv);
 	
 	return classColor;
@@ -315,10 +314,8 @@ vec3 getCompositeColor(){
 }
 
 void main() {
-	vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
 	vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-	vViewPosition = -mvPosition.xyz;
-	vWorldPosition = worldPosition.xyz;
+	vViewPosition = mvPosition.xyz;
 	gl_Position = projectionMatrix * mvPosition;
 	vOpacity = opacity;
 	vLinearDepth = gl_Position.w;
@@ -383,7 +380,7 @@ void main() {
 	float pointSize = 1.0;
 	
 	float slope = tan(fov / 2.0);
-	float projFactor =  0.5 * screenHeight / (slope * vViewPosition.z);
+	float projFactor =  -0.5 * screenHeight / (slope * vViewPosition.z);
 	
 	float r = spacing * 1.5;
 	vRadius = r;
@@ -433,7 +430,6 @@ void main() {
 			vColor.r += 0.5;
 			#endif
 		}
-	
 	#endif
 	
 }

@@ -52,18 +52,13 @@ Potree.POCLoader.load = function load(url, callback) {
 					tightBoundingBox.max.copy(new THREE.Vector3(fMno.tightBoundingBox.ux, fMno.tightBoundingBox.uy, fMno.tightBoundingBox.uz));
 				}
 
-				var offset = new THREE.Vector3(0,0,0);
+				let offset = min.clone();
 				
-				offset.set(-min.x, -min.y, -min.z);
+				boundingBox.min.sub(offset);
+				boundingBox.max.sub(offset);
 				
-				// for precision problem presentation purposes
-				//offset.set(50000*1000,0,0);
-				
-				boundingBox.min.add(offset);
-				boundingBox.max.add(offset);
-				
-				tightBoundingBox.min.add(offset);
-				tightBoundingBox.max.add(offset);
+				tightBoundingBox.min.sub(offset);
+				tightBoundingBox.max.sub(offset);
 				
 				pco.projection = fMno.projection;
 				pco.boundingBox = boundingBox;
@@ -88,6 +83,7 @@ Potree.POCLoader.load = function load(url, callback) {
 					var root = new Potree.PointCloudOctreeGeometryNode(name, pco, boundingBox);
 					root.level = 0;
 					root.hasChildren = true;
+					root.spacing = pco.spacing;
 					if(version.upTo("1.5")){
 						root.numPoints = fMno.hierarchy[0][1];
 					}else{
@@ -112,6 +108,7 @@ Potree.POCLoader.load = function load(url, callback) {
 						var node = new Potree.PointCloudOctreeGeometryNode(name, pco, boundingBox);
 						node.level = level;
 						node.numPoints = numPoints;
+						node.spacing = pco.spacing / Math.pow(2, level);
 						parentNode.addChild(node);
 						nodes[name] = node;
 					}

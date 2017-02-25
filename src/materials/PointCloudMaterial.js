@@ -209,7 +209,7 @@ Potree.PointCloudMaterial.prototype.updateShaderSource = function(){
 	
 	if(this.depthMap){
 		this.uniforms.depthMap.value = this.depthMap;
-		this.depthMap = depthMap;
+		//this.depthMap = depthMap;
 		//this.setValues({
 		//	depthMap: this.depthMap,
 		//});
@@ -685,6 +685,8 @@ Potree.PointCloudMaterial.generateClassificationTexture  = function(classificati
 			var color;
 			if(classification[x]){
 				color = classification[x];
+			}else if(classification[x % 32]){
+				color = classification[x % 32];
 			}else{
 				color = classification.DEFAULT;
 			}
